@@ -36,3 +36,4 @@ if __name__ == '__main__':
 	app = bottle.Bottle()
 	srv = SSLWSGIRefServer(host="worldcupbetsbot.azurewebsites.net", port=80)
 	bottle.run(server=srv)
+	#bottle.run(host='localhost', port=8000, debug=True)
