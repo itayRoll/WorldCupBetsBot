@@ -537,6 +537,7 @@ def buildGroupStageDB():
 	conn = sqlite3.connect('groupStage.db')
 	crsr = conn.cursor()
 	crsr.execute(CREATE_GROUPSTAGE_TABLE)
+	return 'here2'
 	r = requests.get('https://raw.githubusercontent.com/lsv/fifa-worldcup-2018/master/data.json').json()
 	return 'here'
 	groups_json = r['groups']
