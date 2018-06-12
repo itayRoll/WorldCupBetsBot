@@ -157,7 +157,7 @@ def botHook():
 		return handle_message_update(update.message)
 	elif update.callback_query is not None:
 			return handle_callback_query(update.callback_query)
-	else return 'unkown update type'
+	return 'unkown update type'
 
 def is_user_authorized(user_id):
 	bot = telegram.Bot(TOKEN)
