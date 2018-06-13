@@ -498,19 +498,18 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	bot.sendMessage(chat_id=chat_id, text='Number of upcoming mathces is {}'.format(len(crsr.fetchall())))
 	rows = [
 		(
-			#BTN_MATCH.format(
-			#	emoji.emojize(UNICODE_CHECK_MARK.encode('utf8')) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK.encode('utf8')),
-			#	emoji.emojize(row[DB_INDEX_HOME_UNICODE].encode('utf8')),
-			#	row[DB_INDEX_HOME_TEAM],
-			#	row[DB_INDEX_AWAY_TEAM],
-			#	emoji.emojize(row[DB_INDEX_AWAY_UNICODE].encode('utf8')),
-			#	get_effective_match_day(row[DB_INDEX_MATCH_START])#,
+			BTN_MATCH.format(
+			'a',#	emoji.emojize(UNICODE_CHECK_MARK.encode('utf8')) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK.encode('utf8')),
+			'b',#	emoji.emojize(row[DB_INDEX_HOME_UNICODE].encode('utf8')),
+			'c',#	row[DB_INDEX_HOME_TEAM],
+			'd',#	row[DB_INDEX_AWAY_TEAM],
+			'e',#	emoji.emojize(row[DB_INDEX_AWAY_UNICODE].encode('utf8')),
+			'f'#	get_effective_match_day(row[DB_INDEX_MATCH_START])#,
 				#row[DB_INDEX_MATCH_START].hour
-			#),
-			'itay',
+			),
 			str(row[DB_INDEX_MATCH_ID]),
-			str(row[DB_INDEX_HOME_TEAM]),
-			str(row[DB_INDEX_AWAY_TEAM])
+			row[DB_INDEX_HOME_TEAM],
+			row[DB_INDEX_AWAY_TEAM]
 		)
 		for row in crsr.fetchall()
 	]
