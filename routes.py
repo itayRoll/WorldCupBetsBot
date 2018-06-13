@@ -96,9 +96,9 @@ UNICODE_CHECK_MARK = ':white_check_mark:'
 UNICODE_QUESTION_MARK = ':grey_question:'
 UNICODE_CLAPPING_HANDS = ':clap:'
 emoji_dict = {
-    'Argentina:': ':flag_ar:',
-	'Australia:': ':flag_au:',
-	'Belgium:': ':flag_be:',
+    'Argentina:': ':flag_for_Argentina:',
+	'Australia:': ':flag_for_Australia:',
+	'Belgium:': ':flag_for_Belgium:',
 	'Brazil:': ':flag_br:',
 	'Colombia:': ':flag_co:',
 	'Costa_Rica:': ':flag_cr:',
@@ -315,7 +315,7 @@ def handle_join_command(group_id, user_id, username):
 				score_crsr.execute(INSERT_INTO_USER_SCORE, (user_id, 0))
 				score_conn.commit()
 				score_conn.close()
-			claps = emoji.emojize(UNICODE_CLAPPING_HANDS)
+			claps = emoji.emojize(UNICODE_CLAPPING_HANDS, use_aliases=True)
 			txt = '@{} has joined this group bets! {} {}'.format(username, claps, claps)
 	bot.sendMessage(chat_id=group_id, text=txt)
 	return SUCCESS_RESPONSE
@@ -478,62 +478,31 @@ def build_bet_buttons(match_id, curr_bet_prefix, home_code, away_code, bet_str, 
 
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	bot = telegram.Bot(TOKEN)
-	#bot.sendMessage(chat_id=chat_id, text='Inside get matches')
 	conn = sqlite3.connect('groupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
-	#bot.sendMessage(chat_id=chat_id, text='connected to groupStage.db')
 	crsr = conn.cursor()
-	#bot.sendMessage(chat_id=chat_id, text='Init groupstage cursor')
 	crsr.execute(SELECT_MATCHES.format(MAX_UPCOMING_MATCHES))
-	#bot.sendMessage(chat_id=chat_id, text='Executed select matches')
 	bets_conn = sqlite3.connect('bets.db', detect_types=sqlite3.PARSE_DECLTYPES)
-	#bot.sendMessage(chat_id=chat_id, text='Connected to bets.db')
 	bets_crsr = bets_conn.cursor()
-	#bot.sendMessage(chat_id=chat_id, text='Init bets cursor')
 	t = (user_id,)
 	bets_crsr.execute(SELECT_USER_BETS, t)
-	#bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
-	#bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
 	rows = []
 	for row in crsr.fetchall():
 		if row[DB_INDEX_MATCH_ID] in user_bets:
 			sign = emoji.emojize(UNICODE_CHECK_MARK)
 		else:
-			sign = emoji.emojize(UNICODE_QUESTION_MARK)
-		home_flag = emoji.emojize(row[DB_INDEX_HOME_UNICODE])
+			sign = emoji.emojize(UNICODE_QUESTION_MARK, use_aliases=True)
+		home_flag = emoji.emojize(row[DB_INDEX_HOME_UNICODE], use_aliases=True)
 		home_team_name = row[DB_INDEX_HOME_TEAM]
 		away_team_name = row[DB_INDEX_AWAY_TEAM]
-		away_flag = emoji.emojize(row[DB_INDEX_AWAY_UNICODE])
+		away_flag = emoji.emojize(row[DB_INDEX_AWAY_UNICODE], use_aliases=True)
 		starting_at = get_effective_match_day(row[DB_INDEX_MATCH_START])
 		btn_txt = BTN_MATCH.format(sign, home_flag, home_team_name, away_team_name, away_flag, starting_at)
-		bot.sendMessage(chat_id=chat_id, text=btn_txt)
 		rows.append((btn_txt, home_team_name, away_team_name))
-
-	#rows = [
-	#	(
-	#		BTN_MATCH.format(
-	#		emoji.emojize(UNICODE_CHECK_MARK) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK),
-	#		emoji.emojize(row[DB_INDEX_HOME_UNICODE]),
-	#		row[DB_INDEX_HOME_TEAM],
-	#		row[DB_INDEX_AWAY_TEAM],
-	#		emoji.emojize(row[DB_INDEX_AWAY_UNICODE]),
-	#		get_effective_match_day(row[DB_INDEX_MATCH_START])
-	#		),
-	#		str(row[DB_INDEX_MATCH_ID]),
-	#		row[DB_INDEX_HOME_TEAM],
-	#		row[DB_INDEX_AWAY_TEAM]
-	#	)
-	#	for row in crsr.fetchall()
-	#]
-	bot.sendMessage(chat_id=chat_id, text='Init raw rows and buttons for matches')
 	match_buttons = []
 	for row in rows:
-		bot.sendMessage(chat_id=chat_id, text='row[0] = {}, callback data = {}'.format(row[0], PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:])))
 		match_buttons.append([telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))])
-		bot.sendMessage(chat_id=chat_id, text='Created match button')
-	#match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
 	keyboard = telegram.InlineKeyboardMarkup(match_buttons)
-	bot.sendMessage(chat_id=chat_id, text='Created keyboard from match buttons')
 	if edit_mode:
 		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH, reply_markup=keyboard)
 	else:
@@ -585,14 +554,14 @@ def buildGroupStageDB():
 	for group, val in groups_json.items():
 		for match in val['matches']:
 			home_name = teams_dict[int(match['home_team'])]
-			key_home_name = '{}:'.format(home_name.replace(' ', '_'))
-			home_unicode = emoji_dict[key_home_name] if key_home_name in emoji_dict else ''
+			key_home_name = ':flag_for_{}:'.format(home_name.replace(' ', '_'))
+			#home_unicode = emoji_dict[key_home_name] if key_home_name in emoji_dict else ''
 			away_name = teams_dict[int(match['away_team'])]
-			key_away_name = '{}:'.format(away_name.replace(' ', '_'))
-			away_unicode = emoji_dict[key_away_name] if key_away_name in emoji_dict else ''
+			key_away_name = ':flag_for_{}:'.format(away_name.replace(' ', '_'))
+			#away_unicode = emoji_dict[key_away_name] if key_away_name in emoji_dict else ''
 			home_fifa_code = team_fifa_dict[int(match['home_team'])]
 			away_fifa_code = team_fifa_dict[int(match['away_team'])]
-			resiko.append((cnt, val['name'], home_fifa_code, away_fifa_code, datetime.strptime(match['date'][:-6], '%Y-%m-%dT%H:%M:%S'), home_unicode, away_unicode))
+			resiko.append((cnt, val['name'], home_fifa_code, away_fifa_code, datetime.strptime(match['date'][:-6], '%Y-%m-%dT%H:%M:%S'), key_home_name, key_away_name))
 			cnt += 1	
 	crsr.executemany(INSERT_INTO_GROUPSTAGE, resiko)
 	conn.commit()
