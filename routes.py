@@ -167,8 +167,6 @@ def botHook():
 #def get_updates():
 	#bot = telegram.Bot(TOKEN)
 	#update = bot.getUpdates(offset=145072792)[-1]
-	#bot.sendMessage(chat_id=update.message.chat.id, text=emoji.emojize('Python is :thumbs_up:'))
-	#return 'yes'
 	#if update.message is not None:
 	#	return handle_message_update(update.message)
 	#elif update.callback_query is not None:
@@ -496,23 +494,37 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	#bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
 	#bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
-	bot.sendMessage(chat_id=chat_id, text='Number of upcoming mathces is {}'.format(len(crsr.fetchall())))
-	rows = [
-		(
-			BTN_MATCH.format(
-			emoji.emojize(UNICODE_CHECK_MARK) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK),
-			emoji.emojize(row[DB_INDEX_HOME_UNICODE]),
-			row[DB_INDEX_HOME_TEAM],
-			row[DB_INDEX_AWAY_TEAM],
-			emoji.emojize(row[DB_INDEX_AWAY_UNICODE]),
-			get_effective_match_day(row[DB_INDEX_MATCH_START])
-			),
-			str(row[DB_INDEX_MATCH_ID]),
-			row[DB_INDEX_HOME_TEAM],
-			row[DB_INDEX_AWAY_TEAM]
-		)
-		for row in crsr.fetchall()
-	]
+	rows = []
+	for row in crsr.fetchall():
+		if row[DB_INDEX_MATCH_ID] in user_bets:
+			sign = emoji.emojize(UNICODE_CHECK_MARK)
+		else:
+			sign = emoji.emojize(UNICODE_QUESTION_MARK)
+		home_flag = emoji.emojize(row[DB_INDEX_HOME_UNICODE])
+		home_team_name = row[DB_INDEX_HOME_TEAM]
+		away_team_name = row[DB_INDEX_AWAY_TEAM]
+		away_flag = emoji.emojize(row[DB_INDEX_AWAY_UNICODE])
+		starting_at = get_effective_match_day(row[DB_INDEX_MATCH_START])
+		btn_txt = BTN_MATCH.format(sign, home_flag, home_team_name, away_team_name, away_flag, starting_at)
+		bot.sendMessage(chat_id=chat_id, text=btn_txt)
+		rows.append((btn_txt, home_team_name, away_team_name))
+
+	#rows = [
+	#	(
+	#		BTN_MATCH.format(
+	#		emoji.emojize(UNICODE_CHECK_MARK) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK),
+	#		emoji.emojize(row[DB_INDEX_HOME_UNICODE]),
+	#		row[DB_INDEX_HOME_TEAM],
+	#		row[DB_INDEX_AWAY_TEAM],
+	#		emoji.emojize(row[DB_INDEX_AWAY_UNICODE]),
+	#		get_effective_match_day(row[DB_INDEX_MATCH_START])
+	#		),
+	#		str(row[DB_INDEX_MATCH_ID]),
+	#		row[DB_INDEX_HOME_TEAM],
+	#		row[DB_INDEX_AWAY_TEAM]
+	#	)
+	#	for row in crsr.fetchall()
+	#]
 	bot.sendMessage(chat_id=chat_id, text='Init raw rows and buttons for matches')
 	match_buttons = []
 	for row in rows:
