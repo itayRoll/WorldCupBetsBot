@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from bottle import route, view, run, request
 import telegram
 import sqlite3
@@ -92,60 +91,60 @@ HALF_BET_NUM_PARMS = 4
 # END CONSTS
 
 # UNICODE
-UNICODE_BACK_ARROW = u'\U00002B05'
-UNICODE_CHECK_MARK = u'\U00002705'
-UNICODE_QUESTION_MARK = u'\U00002754'
-UNICODE_CLAPPING_HANDS = u'\U0001F44F'
+UNICODE_BACK_ARROW = ':arrow_left:'
+UNICODE_CHECK_MARK = ':white_check_mark:'
+UNICODE_QUESTION_MARK = ':grey_question:'
+UNICODE_CLAPPING_HANDS = ':clap:'
 emoji_dict = {
-    'Argentina:': u'\U0001F1E6\U0001F1F7',
-	'Australia:': u'\U0001F1E6\U0001F1FA',
-	'Belgium:': u'\U0001F1E7\U0001F1EA',
-	'Brazil:': u'\U0001F1E7\U0001F1F7',
-	'Colombia:': u'\U0001F1E8\U0001F1F4',
-	'Costa_Rica:': u'\U0001F1E8\U0001F1F7',
-	'Croatia:': u'\U0001F1ED\U0001F1F7',
-	'Denmark:': u'\U0001F1E9\U0001F1F0',
-	'Egypt:': u'\U0001F1EA\U0001F1EC',
-	'France:': u'\U0001F1EB\U0001F1F7',
-	'Germany:': u'\U0001F1E9\U0001F1EA',
-	'Iceland:': u'\U0001F1EE\U0001F1F8',
-	'Iran:': u'\U0001F1EE\U0001F1F7',
-	'Japan:': u'\U0001F1EF\U0001F1F5',
-	'Mexico:': u'\U0001F1F2\U0001F1FD',
-	'Morocco:': u'\U0001F1F2\U0001F1E6',
-	'Nigeria:': u'\U0001F1F3\U0001F1EC',
-	'Panama:': u'\U0001F1F5\U0001F1E6',
-	'Peru:': u'\U0001F1F5\U0001F1EA',
-	'Poland:': u'\U0001F1F5\U0001F1F1',
-	'Portugal:': u'\U0001F1F5\U0001F1F9',
-	'Russia:': u'\U0001F1F7\U0001F1FA',
-	'Saudi_Arabia:': u'\U0001F1F8\U0001F1E6',
-	'Senegal:': u'\U0001F1F8\U0001F1F3',
-	'Serbia:': u'\U0001F1F7\U0001F1F8',
-	'South_Korea:': u'\U0001F1F0\U0001F1F7',
-	'Spain:': u'\U0001F1EA\U0001F1F8',
-	'Sweden:': u'\U0001F1F8\U0001F1EA',
-	'Switzerland:': u'\U0001F1E8\U0001F1ED',
-	'Tunisia:': u'\U0001F1F9\U0001F1F3',
-	'United_Kingdom:': u'\U0001F1EC\U0001F1E7',
-	'Uruguay:': u'\U0001F1FA\U0001F1FE',
+    'Argentina:': ':flag_ar:',
+	'Australia:': ':flag_au:',
+	'Belgium:': ':flag_be:',
+	'Brazil:': ':flag_br:',
+	'Colombia:': ':flag_co:',
+	'Costa_Rica:': ':flag_cr:',
+	'Croatia:': ':flag_hr:',
+	'Denmark:': ':flag_dk:',
+	'Egypt:': ':flag_eg:',
+	'France:': ':flag_fr:',
+	'Germany:': ':flag_de:',
+	'Iceland:': ':flag_is:',
+	'Iran:': ':flag_ir:',
+	'Japan:': ':flag_jp:',
+	'Mexico:': ':flag_mx:',
+	'Morocco:': ':flag_ma:',
+	'Nigeria:': ':flag_ng:',
+	'Panama:': ':flag_pa:',
+	'Peru:': ':flag_pe:',
+	'Poland:': ':flag_pl:',
+	'Portugal:': ':flag_pt:',
+	'Russia:': ':flag_ru:',
+	'Saudi_Arabia:': ':flag_sa:',
+	'Senegal:': ':flag_sn:',
+	'Serbia:': ':flag_rs:',
+	'South_Korea:': ':flag_kr:',
+	'Spain:': ':flag_es:',
+	'Sweden:': ':flag_se:',
+	'Switzerland:': ':flag_ch:',
+	'Tunisia:': ':flag_tn:',
+	'England:': ':flag_gb:',
+	'Uruguay:': ':flag_uy:',
 	}
 UNICODE_DIGITS = {
-	5 : u'\U00000035\U000020E3',
-	4: u'\U00000034\U000020E3',
-	1: u'\U00000031\U000020E3',
-	7: u'\U00000037\U000020E3',
-	6: u'\U00000036\U000020E3',
-	3: u'\U00000033\U000020E3',
-	2: u'\U00000032\U000020E3',
-	0: u'\U00000030\U000020E3',
+	5 : ':five:',
+	4: ':four:',
+	1: ':one:',
+	7: ':seven:',
+	6: ':six:',
+	3: ':three:',
+	2: ':two:',
+	0: ':zero:',
 }
 
 def get_execution_configuration():
 	return 'Debug' if DEBUG else 'Prod'
 
 def create_back_button():
-	back_sign = emoji.emojize(UNICODE_BACK_ARROW.encode('utf8'))
+	back_sign = emoji.emojize(UNICODE_BACK_ARROW)
 	return telegram.InlineKeyboardButton(BTN_BACK.format(back_sign, back_sign), callback_data=PREFIX_BACK_CHOOSE_MATCH)
 
 @route('/setWebhook')
@@ -165,14 +164,16 @@ def botHook():
 	return 'unkown update type'
 
 #@route('/getUpdates')
-#def botHook():
-#	bot = telegram.Bot(TOKEN)
-#	update = bot.getUpdates(offset=145072792)[-1]
-#	if update.message is not None:
-#		return handle_message_update(update.message)
-#	elif update.callback_query is not None:
-#			return handle_callback_query(update.callback_query)
-#	return 'unkown update type'
+#def get_updates():
+	#bot = telegram.Bot(TOKEN)
+	#update = bot.getUpdates(offset=145072792)[-1]
+	#bot.sendMessage(chat_id=update.message.chat.id, text=emoji.emojize('Python is :thumbs_up:'))
+	#return 'yes'
+	#if update.message is not None:
+	#	return handle_message_update(update.message)
+	#elif update.callback_query is not None:
+	#		return handle_callback_query(update.callback_query)
+	#return 'unkown update type'
 
 def is_user_authorized(user_id):
 	bot = telegram.Bot(TOKEN)
@@ -316,7 +317,7 @@ def handle_join_command(group_id, user_id, username):
 				score_crsr.execute(INSERT_INTO_USER_SCORE, (user_id, 0))
 				score_conn.commit()
 				score_conn.close()
-			claps = UNICODE_CLAPPING_HANDS.encode('utf8')
+			claps = emoji.emojize(UNICODE_CLAPPING_HANDS)
 			txt = '@{} has joined this group bets! {} {}'.format(username, claps, claps)
 	bot.sendMessage(chat_id=group_id, text=txt)
 	return SUCCESS_RESPONSE
@@ -404,12 +405,12 @@ def get_user_bets(chat_id, user_id):
 	template = '{} {} {} - {} {} {}'
 	user_bets_msg = '\n\n'.join([
 		template.format(
-			emoji.emojize(match[3].encode('utf8')), # home team flag
+			emoji.emojize(match[3]), # home team flag
 			match[1], # home team name
 			dic_user_bets[int(match[0])][0], # home goals bet
 			dic_user_bets[int(match[0])][1], # away goals bet
 			match[2], # away team name
-			emoji.emojize(match[4].encode('utf8')) # away team flag
+			emoji.emojize(match[4]) # away team flag
 		)
 		for match in group_crsr.fetchall() if int(match[0]) in dic_user_bets
 	])
@@ -474,38 +475,37 @@ def build_bet_buttons(match_id, curr_bet_prefix, home_code, away_code, bet_str, 
 	if bet_str is not None:
 		bet_val = int(bet_str)
 		btn_text = buttons[bet_val].text
-		buttons[bet_val].text = emoji.emojize(UNICODE_DIGITS[bet_val].encode('utf8'))
+		buttons[bet_val].text = emoji.emojize(UNICODE_DIGITS[bet_val])
 	return buttons
 
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	bot = telegram.Bot(TOKEN)
-	bot.sendMessage(chat_id=chat_id, text='Inside get matches')
+	#bot.sendMessage(chat_id=chat_id, text='Inside get matches')
 	conn = sqlite3.connect('groupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
-	bot.sendMessage(chat_id=chat_id, text='connected to groupStage.db')
+	#bot.sendMessage(chat_id=chat_id, text='connected to groupStage.db')
 	crsr = conn.cursor()
-	bot.sendMessage(chat_id=chat_id, text='Init groupstage cursor')
+	#bot.sendMessage(chat_id=chat_id, text='Init groupstage cursor')
 	crsr.execute(SELECT_MATCHES.format(MAX_UPCOMING_MATCHES))
-	bot.sendMessage(chat_id=chat_id, text='Executed select matches')
+	#bot.sendMessage(chat_id=chat_id, text='Executed select matches')
 	bets_conn = sqlite3.connect('bets.db', detect_types=sqlite3.PARSE_DECLTYPES)
-	bot.sendMessage(chat_id=chat_id, text='Connected to bets.db')
+	#bot.sendMessage(chat_id=chat_id, text='Connected to bets.db')
 	bets_crsr = bets_conn.cursor()
-	bot.sendMessage(chat_id=chat_id, text='Init bets cursor')
+	#bot.sendMessage(chat_id=chat_id, text='Init bets cursor')
 	t = (user_id,)
 	bets_crsr.execute(SELECT_USER_BETS, t)
-	bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
+	#bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
-	bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
+	#bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
 	bot.sendMessage(chat_id=chat_id, text='Number of upcoming mathces is {}'.format(len(crsr.fetchall())))
 	rows = [
 		(
 			BTN_MATCH.format(
-			'a',#	emoji.emojize(UNICODE_CHECK_MARK.encode('utf8')) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK.encode('utf8')),
-			'b',#	emoji.emojize(row[DB_INDEX_HOME_UNICODE].encode('utf8')),
-			'c',#	row[DB_INDEX_HOME_TEAM],
-			'd',#	row[DB_INDEX_AWAY_TEAM],
-			'e',#	emoji.emojize(row[DB_INDEX_AWAY_UNICODE].encode('utf8')),
-			'f'#	get_effective_match_day(row[DB_INDEX_MATCH_START])#,
-				#row[DB_INDEX_MATCH_START].hour
+			emoji.emojize(UNICODE_CHECK_MARK) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK),
+			emoji.emojize(row[DB_INDEX_HOME_UNICODE]),
+			row[DB_INDEX_HOME_TEAM],
+			row[DB_INDEX_AWAY_TEAM],
+			emoji.emojize(row[DB_INDEX_AWAY_UNICODE]),
+			get_effective_match_day(row[DB_INDEX_MATCH_START])
 			),
 			str(row[DB_INDEX_MATCH_ID]),
 			row[DB_INDEX_HOME_TEAM],
