@@ -504,11 +504,11 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 		)
 		for row in crsr.fetchall()
 	]
-	match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
+	#match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
 	if edit_mode:
-		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
+		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH)#, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
 	else:
-		bot.sendMessage(chat_id=chat_id, text=CHOOSE_MATCH, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
+		bot.sendMessage(chat_id=chat_id, text=CHOOSE_MATCH)#, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
 	return SUCCESS_RESPONSE
 
 def get_effective_match_day(dt):
