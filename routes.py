@@ -478,15 +478,23 @@ def build_bet_buttons(match_id, curr_bet_prefix, home_code, away_code, bet_str, 
 	return buttons
 
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
+	bot = telegram.Bot(TOKEN)
+	bot.sendMessage(chat_id=chat_id, text='Inside get matches')
 	conn = sqlite3.connect('groupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
+	bot.sendMessage(chat_id=chat_id, text='connected to groupStage.db')
 	crsr = conn.cursor()
+	bot.sendMessage(chat_id=chat_id, text='Init groupstage cursor')
 	crsr.execute(SELECT_MATCHES.format(MAX_UPCOMING_MATCHES))
+	bot.sendMessage(chat_id=chat_id, text='Executed select matches')
 	bets_conn = sqlite3.connect('bets.db', detect_types=sqlite3.PARSE_DECLTYPES)
+	bot.sendMessage(chat_id=chat_id, text='Connected to bets.db')
 	bets_crsr = bets_conn.cursor()
+	bot.sendMessage(chat_id=chat_id, text='Init bets cursor')
 	t = (user_id,)
 	bets_crsr.execute(SELECT_USER_BETS, t)
+	bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
-	bot = telegram.Bot(TOKEN)
+	bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
 	rows = [
 		(
 			BTN_MATCH.format(
@@ -504,7 +512,9 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 		)
 		for row in crsr.fetchall()
 	]
-	#match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
+	bot.sendMessage(chat_id=chat_id, text='Init raw rows and buttons for matches')
+	match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
+	bot.sendMessage(chat_id=chat_id, text='Init match buttons')
 	if edit_mode:
 		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH)#, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
 	else:
