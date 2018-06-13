@@ -514,12 +514,18 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 		for row in crsr.fetchall()
 	]
 	bot.sendMessage(chat_id=chat_id, text='Init raw rows and buttons for matches')
-	match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
-	bot.sendMessage(chat_id=chat_id, text='Init match buttons')
+	match_buttons = []
+	for row in rows:
+		bot.sendMessage(chat_id=chat_id, text='row[0] = {}, callback data = {}'.format(row[0], PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:])))
+		match_buttons.append([telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))])
+		bot.sendMessage(chat_id=chat_id, text='Created match button')
+	#match_buttons = [[telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))] for row in rows]
+	keyboard = telegram.InlineKeyboardMarkup(match_buttons)
+	bot.sendMessage(chat_id=chat_id, text='Created keyboard from match buttons')
 	if edit_mode:
-		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
+		bot.editMessageText(chat_id=chat_id, message_id=message_id, text=CHOOSE_MATCH, reply_markup=keyboard)
 	else:
-		bot.sendMessage(chat_id=chat_id, text=CHOOSE_MATCH, reply_markup=telegram.InlineKeyboardMarkup(match_buttons))
+		bot.sendMessage(chat_id=chat_id, text=CHOOSE_MATCH, reply_markup=keyboard)
 	return SUCCESS_RESPONSE
 
 def get_effective_match_day(dt):
