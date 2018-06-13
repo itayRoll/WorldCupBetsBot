@@ -8,6 +8,8 @@ from datetime import datetime
 import emoji
 import calendar
 
+DEBUG = True
+
 # BOT SETTINGS
 TOKEN = '552988587:AAFOqPcC-5eDV3HWeYS9yUGGsx_2IiLLCxM'
 APPNAME = 'worldcupbetsbot'
@@ -45,15 +47,15 @@ USR_INVALID_INPUT_HERE = 'Unkown command. Type in / and pick a command from the 
 
 # SQLITE QUERIES
 #SELECT_MATCHES = "SELECT * FROM groupStage WHERE start > datetime('now', '+{} day', '-{} hour') AND start < datetime('now', '+{} day', '+{} hour') ORDER BY start"
-SELECT_MATCHES = "SELECT * FROM groupStage ORDER BY start LIMIT {}"
-CREATE_GROUPSTAGE_TABLE = '''CREATE TABLE groupStage (matchId integer, groupName text, homeTeam text, awayTeam text, start timestamp, homeUnicode text, awayUnicode text)'''
-INSERT_INTO_GROUPSTAGE = 'INSERT INTO groupStage VALUES (?,?,?,?,?,?,?)'
+SELECT_MATCHES = "SELECT * FROM DgroupStage ORDER BY start LIMIT {}"
+CREATE_GROUPSTAGE_TABLE = '''CREATE TABLE DgroupStage (matchId integer, groupName text, homeTeam text, awayTeam text, start timestamp, homeUnicode text, awayUnicode text)'''
+INSERT_INTO_GROUPSTAGE = 'INSERT INTO DgroupStage VALUES (?,?,?,?,?,?,?)'
 CREATE_BETS_TABLE = '''CREATE TABLE bets (userId text, userName text, matchId integer, homeBet integer, awayBet integer)'''
 INSERT_INTO_BETS = 'INSERT INTO bets VALUES (?,?,?,?,?)'
 EDIT_BET = "UPDATE bets SET homeBet=?, awayBet=? WHERE userId=? AND matchId=?"
 SELECT_USER_BETS = "SELECT * FROM bets WHERE userId=?"
 SELECT_USER_MATCH_BETS = "SELECT * FROM bets WHERE userId=? AND matchId=?"
-SELECT_FUTURE_MATCH = "SELECT * FROM groupStage WHERE matchId=? AND start > datetime('now')"
+SELECT_FUTURE_MATCH = "SELECT * FROM DgroupStage WHERE matchId=? AND start > datetime('now')"
 CREATE_AUTHORIZED_GROUPS_TABLE = '''CREATE TABLE authorizedGroups (groupId text)'''
 INSERT_INTO_AUTHORIZED_GROUPS = 'INSERT INTO authorizedGroups VALUES (?)'
 SELECT_AUTHORIZED_GROUP = "SELECT * FROM authorizedGroups WHERE groupId=?"
@@ -139,6 +141,9 @@ UNICODE_DIGITS = {
 	0: u'\U00000030\U000020E3',
 }
 
+def get_execution_configuration():
+	return 'Debug' if DEBUG else 'Prod'
+
 def create_back_button():
 	back_sign = emoji.emojize(UNICODE_BACK_ARROW.encode('utf8'))
 	return telegram.InlineKeyboardButton(BTN_BACK.format(back_sign, back_sign), callback_data=PREFIX_BACK_CHOOSE_MATCH)
@@ -158,6 +163,16 @@ def botHook():
 	elif update.callback_query is not None:
 			return handle_callback_query(update.callback_query)
 	return 'unkown update type'
+
+#@route('/getUpdates')
+#def botHook():
+#	bot = telegram.Bot(TOKEN)
+#	update = bot.getUpdates(offset=145072792)[-1]
+#	if update.message is not None:
+#		return handle_message_update(update.message)
+#	elif update.callback_query is not None:
+#			return handle_callback_query(update.callback_query)
+#	return 'unkown update type'
 
 def is_user_authorized(user_id):
 	bot = telegram.Bot(TOKEN)
@@ -383,9 +398,9 @@ def get_user_bets(chat_id, user_id):
 	if len(dic_user_bets) < 1:
 		bot.sendMessage(chat_id=chat_id, text=NO_USER_BETS)
 		return SUCCESS_RESPONSE
-	matches_conn = sqlite3.connect('groupStage.db')
+	matches_conn = sqlite3.connect('DgroupStage.db')
 	group_crsr = matches_conn.cursor()
-	group_crsr.execute("SELECT matchId, homeTeam, awayTeam, homeUnicode, awayUnicode FROM groupStage")
+	group_crsr.execute("SELECT matchId, homeTeam, awayTeam, homeUnicode, awayUnicode FROM DgroupStage")
 	template = '{} {} {} - {} {} {}'
 	user_bets_msg = '\n\n'.join([
 		template.format(
@@ -406,7 +421,7 @@ def place_bet(query, chat_id, message_id, match_id, home_code, away_code, home_b
 	frm = query.message.chat
 	user_name = frm.username
 	user_id = frm.id
-	matches_conn = sqlite3.connect('groupStage.db')
+	matches_conn = sqlite3.connect('DgroupStage.db')
 	group_crsr = matches_conn.cursor()
 	group_crsr.execute(SELECT_FUTURE_MATCH, (match_id,))
 	if group_crsr.fetchone() is None:
@@ -472,7 +487,7 @@ def test_createTopScorerDB():
 	conn.close()
 
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
-	conn = sqlite3.connect('groupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
+	conn = sqlite3.connect('DgroupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
 	crsr = conn.cursor()
 	crsr.execute(SELECT_MATCHES.format(MAX_UPCOMING_MATCHES))
 	bets_conn = sqlite3.connect('bets.db', detect_types=sqlite3.PARSE_DECLTYPES)
@@ -534,12 +549,10 @@ def buildTeamsDB():
 
 @route('/buildGroupStageDB')
 def buildGroupStageDB():
-	conn = sqlite3.connect('groupStage.db')
+	conn = sqlite3.connect('DgroupStage.db')
 	crsr = conn.cursor()
 	crsr.execute(CREATE_GROUPSTAGE_TABLE)
-	return 'here2'
 	r = requests.get('https://raw.githubusercontent.com/lsv/fifa-worldcup-2018/master/data.json').json()
-	return 'here'
 	groups_json = r['groups']
 	teams_json = r['teams']
 	team_fifa_dict = {}
