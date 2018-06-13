@@ -495,20 +495,22 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	bot.sendMessage(chat_id=chat_id, text='Executed select user bets')
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
 	bot.sendMessage(chat_id=chat_id, text='Created list of user bets match ids')
+	bot.sendMessage(chat_id=chat_id, text='Number of upcoming mathces is {}'.format(len(crsr.fetchall())))
 	rows = [
 		(
-			BTN_MATCH.format(
-				emoji.emojize(UNICODE_CHECK_MARK.encode('utf8')) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK.encode('utf8')),
-				emoji.emojize(row[DB_INDEX_HOME_UNICODE].encode('utf8')),
-				row[DB_INDEX_HOME_TEAM],
-				row[DB_INDEX_AWAY_TEAM],
-				emoji.emojize(row[DB_INDEX_AWAY_UNICODE].encode('utf8')),
-				get_effective_match_day(row[DB_INDEX_MATCH_START])#,
+			#BTN_MATCH.format(
+			#	emoji.emojize(UNICODE_CHECK_MARK.encode('utf8')) if row[DB_INDEX_MATCH_ID] in user_bets else emoji.emojize(UNICODE_QUESTION_MARK.encode('utf8')),
+			#	emoji.emojize(row[DB_INDEX_HOME_UNICODE].encode('utf8')),
+			#	row[DB_INDEX_HOME_TEAM],
+			#	row[DB_INDEX_AWAY_TEAM],
+			#	emoji.emojize(row[DB_INDEX_AWAY_UNICODE].encode('utf8')),
+			#	get_effective_match_day(row[DB_INDEX_MATCH_START])#,
 				#row[DB_INDEX_MATCH_START].hour
-			),
+			#),
+			'itay',
 			str(row[DB_INDEX_MATCH_ID]),
-			row[DB_INDEX_HOME_TEAM],
-			row[DB_INDEX_AWAY_TEAM]
+			str(row[DB_INDEX_HOME_TEAM]),
+			str(row[DB_INDEX_AWAY_TEAM])
 		)
 		for row in crsr.fetchall()
 	]
