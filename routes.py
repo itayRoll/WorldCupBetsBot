@@ -477,15 +477,6 @@ def build_bet_buttons(match_id, curr_bet_prefix, home_code, away_code, bet_str, 
 		buttons[bet_val].text = emoji.emojize(UNICODE_DIGITS[bet_val].encode('utf8'))
 	return buttons
 
-@route('/createTopScorerDB')
-def test_createTopScorerDB():
-	conn = sqlite3.connect('topScorer.db')
-	crsr = conn.cursor()
-	crsr.execute('''CREATE TABLE topScorer (user text, name text)''')
-	crsr.execute("INSERT INTO topScorer VALUES ('itayR','Messi')")
-	conn.commit()
-	conn.close()
-
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	conn = sqlite3.connect('DgroupStage.db', detect_types=sqlite3.PARSE_DECLTYPES)
 	crsr = conn.cursor()
@@ -562,7 +553,7 @@ def buildGroupStageDB():
 		team_fifa_dict[int(team['id'])] = team['fifaCode']
 	resiko = []
 	cnt = 0
-	for group, val in groups_json.iteritems():
+	for group, val in groups_json.items():
 		for match in val['matches']:
 			home_name = teams_dict[int(match['home_team'])]
 			key_home_name = '{}:'.format(home_name.replace(' ', '_'))
