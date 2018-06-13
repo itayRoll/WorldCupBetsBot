@@ -569,13 +569,9 @@ def buildGroupStageDB():
 			home_name = teams_dict[int(match['home_team'])]
 			key_home_name = '{}:'.format(home_name.replace(' ', '_'))
 			home_unicode = emoji_dict[key_home_name] if key_home_name in emoji_dict else ''
-			if home_name == 'England':
-				home_unicode = emoji_dict['United_Kingdom:']
 			away_name = teams_dict[int(match['away_team'])]
 			key_away_name = '{}:'.format(away_name.replace(' ', '_'))
 			away_unicode = emoji_dict[key_away_name] if key_away_name in emoji_dict else ''
-			if away_name == 'England':
-				away_unicode = emoji_dict['United_Kingdom:']
 			home_fifa_code = team_fifa_dict[int(match['home_team'])]
 			away_fifa_code = team_fifa_dict[int(match['away_team'])]
 			resiko.append((cnt, val['name'], home_fifa_code, away_fifa_code, datetime.strptime(match['date'][:-6], '%Y-%m-%dT%H:%M:%S'), home_unicode, away_unicode))
