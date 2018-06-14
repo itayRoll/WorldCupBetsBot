@@ -273,7 +273,7 @@ def handle_message_update(msg):
 			elif is_entity_join_command(parsed_entity):
 				# accept command only if it comes from an authorized group
 				if not is_authorized_group(group_id):
-					return send_error_message(chat_id=group_id, text='Admin user must authorize this group before other users can join.')
+					return send_error_message(chat_id=group_id, error_message='Admin user must authorize this group before other users can join.')
 				else:
 					# group is authorized - handle command
 					return handle_join_command(group_id, msg.from_user.id, msg.from_user.username)
@@ -401,17 +401,18 @@ def get_user_bets(chat_id, user_id):
 	group_crsr = matches_conn.cursor()
 	group_crsr.execute("SELECT matchId, homeTeam, awayTeam, homeUnicode, awayUnicode FROM groupStage")
 	template = '{} {} {} - {} {} {}'
-	user_bets_msg = '\n\n'.join([
-		template.format(
-			emoji.emojize(match[3]), # home team flag
-			match[1], # home team name
-			dic_user_bets[int(match[0])][0], # home goals bet
-			dic_user_bets[int(match[0])][1], # away goals bet
-			match[2], # away team name
-			emoji.emojize(match[4]) # away team flag
-		)
-		for match in group_crsr.fetchall() if int(match[0]) in dic_user_bets
-	])
+	bets_lst = []
+	for match in crsr.fetchall():
+		match_id_val = int(match[0])
+		if match_id_val in dic_user_bets:
+			home_flag = emoji.emojize(match[3], use_aliases=True)
+			home_team_name = match[1]
+			home_bet = dic_user_bets[match_id_val][0]
+			away_bet = dic_user_bets[match_id_val][1]
+			away_team_name = match[2]
+			away_flag = emoji.emojize(match[4], use_aliases=True)
+			bets_lst.append(template.format(home_flag, home_team_name, home_bet, away_bet, away_team_name, away_flag))
+	user_bets_msg = '\n\n'.join(bets_lst)
 	bot.sendMessage(chat_id=chat_id, text=user_bets_msg)
 	return SUCCESS_RESPONSE
 
