@@ -130,14 +130,14 @@ emoji_dict = {
 	'Uruguay:': ':flag_uy:',
 	}
 UNICODE_DIGITS = {
-	5 : ':five:',
-	4: ':four:',
-	1: ':one:',
-	7: ':seven:',
-	6: ':six:',
-	3: ':three:',
-	2: ':two:',
-	0: ':zero:',
+	5 : ':keycap_digit_five:',
+	4: ':keycap_digit_four:',
+	1: ':keycap_digit_one:',
+	7: ':keycap_digit_seven:',
+	6: ':keycap_digit_six:',
+	3: ':keycap_digit_three:',
+	2: ':keycap_digit_two:',
+	0: ':keycap_digit_zero:',
 }
 
 def get_execution_configuration():
@@ -273,7 +273,7 @@ def handle_message_update(msg):
 			elif is_entity_join_command(parsed_entity):
 				# accept command only if it comes from an authorized group
 				if not is_authorized_group(group_id):
-					return send_premissions_error_message(group_id)
+					return send_error_message(chat_id=group_id, text='Admin user must authorize this group before other users can join.')
 				else:
 					# group is authorized - handle command
 					return handle_join_command(group_id, msg.from_user.id, msg.from_user.username)
@@ -473,7 +473,7 @@ def build_bet_buttons(match_id, curr_bet_prefix, home_code, away_code, bet_str, 
 	if bet_str is not None:
 		bet_val = int(bet_str)
 		btn_text = buttons[bet_val].text
-		buttons[bet_val].text = emoji.emojize(UNICODE_DIGITS[bet_val])
+		buttons[bet_val].text = emoji.emojize(UNICODE_DIGITS[bet_val], use_aliases=True)
 	return buttons
 
 def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
