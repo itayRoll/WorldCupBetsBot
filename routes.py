@@ -390,7 +390,6 @@ def send_error_message(chat_id, error_message):
 
 def get_user_bets(chat_id, user_id):
 	bot = telegram.Bot(TOKEN)
-	bot.sendMessage(chat_id=chat_id, text='Inside get_user_bets function')
 	conn = sqlite3.connect('bets.db')
 	crsr = conn.cursor()
 	crsr.execute(SELECT_USER_BETS, (user_id,))
@@ -398,17 +397,14 @@ def get_user_bets(chat_id, user_id):
 	if len(dic_user_bets) < 1:
 		bot.sendMessage(chat_id=chat_id, text=NO_USER_BETS)
 		return SUCCESS_RESPONSE
-	bot.sendMessage(chat_id=chat_id, text='There are user bets')
 	matches_conn = sqlite3.connect('groupStage.db')
 	group_crsr = matches_conn.cursor()
-	group_crsr.execute("SELECT matchId, homeTeam, awayTeam, homeUnicode, awayUnicode FROM groupStage")
+	group_crsr.execute("SELECT matchId, homeTeam, awayTeam, homeUnicode, awayUnicode FROM groupStage ORDER BY start DESC")
 	template = '{} {} {} - {} {} {}'
 	bets_lst = []
-	bot.sendMessage(chat_id=chat_id, text='Starting to build bets list')
 	for match in group_crsr.fetchall():
 		match_id_val = int(match[0])
 		if match_id_val in dic_user_bets:
-			bot.sendMessage(chat_id=chat_id, text='Found match id {} in user bets')
 			home_flag = emoji.emojize(match[3], use_aliases=True)
 			home_team_name = match[1]
 			home_bet = dic_user_bets[match_id_val][0]
