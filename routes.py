@@ -144,7 +144,7 @@ def get_execution_configuration():
 	return 'Debug' if DEBUG else 'Prod'
 
 def create_back_button():
-	back_sign = emoji.emojize(UNICODE_BACK_ARROW)
+	back_sign = emoji.emojize(UNICODE_BACK_ARROW, use_aliases=True)
 	return telegram.InlineKeyboardButton(BTN_BACK.format(back_sign, back_sign), callback_data=PREFIX_BACK_CHOOSE_MATCH)
 
 @route('/setWebhook')
@@ -160,7 +160,7 @@ def botHook():
 	if update.message is not None:
 		return handle_message_update(update.message)
 	elif update.callback_query is not None:
-			return handle_callback_query(update.callback_query)
+		return handle_callback_query(update.callback_query)
 	return 'unkown update type'
 
 #@route('/getUpdates')
@@ -488,8 +488,9 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 	user_bets = [bet[BET_DB_INDEX_MATCH_ID] for bet in bets_crsr.fetchall()] # match id of matches that user has already placed a bet on
 	rows = []
 	for row in crsr.fetchall():
-		if row[DB_INDEX_MATCH_ID] in user_bets:
-			sign = emoji.emojize(UNICODE_CHECK_MARK)
+		match_id = row[DB_INDEX_MATCH_ID]
+		if match_id in user_bets:
+			sign = emoji.emojize(UNICODE_CHECK_MARK, use_aliases=True)
 		else:
 			sign = emoji.emojize(UNICODE_QUESTION_MARK, use_aliases=True)
 		home_flag = emoji.emojize(row[DB_INDEX_HOME_UNICODE], use_aliases=True)
@@ -498,7 +499,7 @@ def get_matches(chat_id, user_id, edit_mode=False, message_id=None):
 		away_flag = emoji.emojize(row[DB_INDEX_AWAY_UNICODE], use_aliases=True)
 		starting_at = get_effective_match_day(row[DB_INDEX_MATCH_START])
 		btn_txt = BTN_MATCH.format(sign, home_flag, home_team_name, away_team_name, away_flag, starting_at)
-		rows.append((btn_txt, home_team_name, away_team_name))
+		rows.append((btn_txt, str(match_id), home_team_name, away_team_name))
 	match_buttons = []
 	for row in rows:
 		match_buttons.append([telegram.InlineKeyboardButton(row[0], callback_data=PREFIX_CHOSEN_MATCH + CALLBACK_MATCH_SEPARATOR.join(row[1:]))])
