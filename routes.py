@@ -46,7 +46,7 @@ USR_INVALID_INPUT_HERE = 'Unkown command. Type in / and pick a command from the 
 
 # SQLITE QUERIES
 #SELECT_MATCHES = "SELECT * FROM groupStage WHERE start > datetime('now', '+{} day', '-{} hour') AND start < datetime('now', '+{} day', '+{} hour') ORDER BY start"
-SELECT_MATCHES = "SELECT * FROM groupStage ORDER BY start LIMIT {}"
+SELECT_MATCHES = "SELECT * FROM groupStage WHERE start > datetime('now') ORDER BY start LIMIT {}"
 CREATE_GROUPSTAGE_TABLE = '''CREATE TABLE groupStage (matchId integer, groupName text, homeTeam text, awayTeam text, start timestamp, homeUnicode text, awayUnicode text)'''
 INSERT_INTO_GROUPSTAGE = 'INSERT INTO groupStage VALUES (?,?,?,?,?,?,?)'
 CREATE_BETS_TABLE = '''CREATE TABLE bets (userId text, userName text, matchId integer, homeBet integer, awayBet integer)'''
